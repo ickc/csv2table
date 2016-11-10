@@ -16,5 +16,6 @@ matrix:
             - $HOME/.ghc
             - $HOME/.cabal
             - $HOME/.stack
+          ghc: 8.0.1
 script:
     - make -j4
