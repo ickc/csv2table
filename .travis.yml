@@ -4,6 +4,10 @@ matrix:
           sudo: false
           language: r
           pandoc_version: 1.18
+          addons:
+            apt:
+              packages:
+              - cabal-install
           install:
               - pip install --user pandocfilters
               - tlmgr install latexmk physics cancel fourier utopia
@@ -16,6 +20,5 @@ matrix:
             - $HOME/.ghc
             - $HOME/.cabal
             - $HOME/.stack
-          ghc: 8.0.1
 script:
     - make -j4
