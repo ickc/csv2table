@@ -7,8 +7,12 @@ matrix:
           pandoc_version: 1.18
           before_install:
               - sudo apt-get -qq update
-              - sudo apt-get -qq ghc cabal-install
-          install:     
+          addons:
+            apt:
+              packages:
+              - ghc
+              - cabal-install
+          install:
               - pip install --user pandocfilters
               - tlmgr install latexmk physics cancel fourier utopia
               - cabal update
