@@ -16,7 +16,8 @@ matrix:
               - pip install --user pandocfilters
               - tlmgr install latexmk physics cancel fourier utopia
               - cabal update
-              - cabal install --allow-newer=base pandoc-csv2table
+              - cabal install pandoc
+              - cabal install pandoc-csv2table
               - cabal install -f inlineMarkdown pandoc-placetable
           cache:
             packages: true
