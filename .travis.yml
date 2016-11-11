@@ -4,9 +4,6 @@ matrix:
           sudo: required
           dist: trusty
           language: r
-          pandoc_version: 1.18
-          before_install:
-              - sudo apt-get -qq update
           addons:
             apt:
               packages:
