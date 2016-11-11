@@ -27,4 +27,4 @@ matrix:
             - $HOME/.cabal
             - $HOME/.stack
 script:
-    - make -j4
+    - export PATH="$HOME/.cabal/bin:$PATH" && make -j4
