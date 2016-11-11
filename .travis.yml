@@ -10,11 +10,10 @@ matrix:
               - ghc
               - cabal-install
           install:
-              - pip install --user pandocfilters
+              - pip install -U pandocfilters tabulate terminaltables astropy openpyxl pillow csv
               - tlmgr install latexmk physics cancel fourier utopia
               - cabal update
-              - cabal install pandoc
-              - cabal install pandoc-csv2table
+              - cabal install pandoc pandoc-csv2table
               - cabal install -f inlineMarkdown pandoc-placetable
           cache:
             packages: true
