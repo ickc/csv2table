@@ -53,4 +53,4 @@ placetable/%.tex: source/%.md
 	pandoc --filter pandoc-placetable -s -o $@ $<
 placetable/%.pdf: source/%.md
 	mkdir -p placetable
-	pandoc --filter pandoc-placetable -s -o $@ $<
+	pandoc --filter pandoc-placetable -s -o $@ $< || true
