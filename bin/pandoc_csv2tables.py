@@ -8,4 +8,5 @@ if __name__ == "__main__":
         data = list(csv.reader(f))
     table = AsciiTable(data)
     table.inner_row_border = True
+    table.CHAR_H_INNER_HORIZONTAL = '='
     print(table.table)

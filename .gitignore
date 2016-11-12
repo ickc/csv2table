@@ -1,4 +1,6 @@
 .DS_Store
 csv2table/
 placetable/
+panflute-csv-tables/
+terminaltables/
 source/*.md
