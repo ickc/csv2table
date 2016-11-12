@@ -10,7 +10,7 @@ matrix:
               - ghc
               - cabal-install
           install:
-              - pip install -U pandocfilters tabulate terminaltables astropy openpyxl pillow
+              - pip install -U pandocfilters tabulate terminaltables astropy openpyxl pillow pyyaml
               - tlmgr install latexmk physics cancel fourier utopia
               - cabal update
               - cabal install pandoc pandoc-csv2table
