@@ -2,52 +2,72 @@
 
 """
 Panflute filter to parse CSV in fenced YAML code blocks
+e.g.
+
+```markdown
+~~~csv
+title: "*Great* Title"
+has-header: False
+width: 0.25, 0.25, 0.25, 0.25
+alignment: AlignLeft, AlignRight, AlignCenter, AlignDefault
+---
+**_Fruit_**,~~Price~~,_Number_,`Advantages`
+*Bananas~1~*,$1.34,12~units~,"Benefits of eating bananas 
+(**Note the appropriately
+rendered block markdown**):    
+
+- _built-in wrapper_        
+- ~~**bright color**~~
+
+"
+*Oranges~2~*,$2.10,5^10^~units~,"Benefits of eating oranges:
+
+- **cures** scurvy
+- `tasty`"
+~~~
+```
 """
 
 import io
 import csv
-import panflute as pf
+import panflute
 
-
-def fenced_action(options, data, element, doc):
-    # We'll only run this for CodeBlock elements of class 'csv'
+def fenced_csv(options, data, element, doc):
+    # read csv and convert to panflute table representation
+    with io.StringIO(data) as f:
+        reader = csv.reader(f)
+        body = []
+        for row in reader:
+            cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
+            body.append(panflute.TableRow(*cells))
+        # get no of columns for header
+        f.seek(0)
+        noOfColumn = len(list(reader)[0])
+    # read YAML metadata
     try:
-        title = options.get('title')
-        # get has_header
-        has_header = options.get('has-header',True)
+        caption = options.get('title')
         width = options.get('width')
         alignment = options.get('alignment')
+        has_header = options.get('has-header',True)
     except AttributeError:
+        caption = None
         width = None
-        title = None
-        has_header = True
         alignment = None
-
-    # get title
-    if title != None:
-        title = pf.convert_text(title)[0].content
+        has_header = True
+    # get caption
+    if caption != None:
+        caption = panflute.convert_text(caption)[0].content
     # get width
     if width != None:
         width = [float(x) for x in width.split(",")]
     # get alignment
     if alignment != None:
         alignment = [x.strip() for x in alignment.split(",")]
-
-    with io.StringIO(data) as f:
-        reader = csv.reader(f)
-        body = []
-        for row in reader:
-            cells = [pf.TableCell(*pf.convert_text(x)) for x in row]
-            body.append(pf.TableRow(*cells))
-        # get no of columns for header
-        f.seek(0)
-        noOfColumn = len(list(reader)[0])
-    
-    # Todo: When has_header = False, it should return a list of empty row
-    header = body.pop(0) if has_header else pf.TableRow(*[pf.TableCell() for i in range(noOfColumn)])
-    table = pf.Table(*body, header=header, caption=title, width=width, alignment=alignment)
+    # finalize table according to metadata
+    header = body.pop(0) if has_header else panflute.TableRow(*[panflute.TableCell() for i in range(noOfColumn)])
+    table = panflute.Table(*body, header=header, caption=caption, width=width, alignment=alignment)
     return table
 
-
+# We'll only run this for CodeBlock elements of class 'csv'
 if __name__ == '__main__':
-    pf.toJSONFilter(pf.yaml_filter, tag='csv', function=fenced_action)
+    panflute.toJSONFilter(panflute.yaml_filter, tag='csv', function=fenced_csv)
