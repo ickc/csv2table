@@ -1,4 +1,5 @@
 ~~~csv
+table-width: 1.2
 ---
 **_Fruit_**,~~Price~~,_Number_,`Advantages`
 *Bananas~1~*,$1.34,12~units~,"Benefits of eating bananas 

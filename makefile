@@ -74,7 +74,7 @@ placetable/%.pdf: placetable/%.source.md
 # panflute csv-tables
 panflute-csv-tables/%.source.md: source/%.csv
 	mkdir -p panflute-csv-tables
-	printf "%s\n" "~~~csv" "has-header: True" "---" > $@
+	printf "%s\n" "~~~csv" "---" > $@
 	cat $< >> $@
 	printf "%s\n" "" "~~~" >> $@
 panflute-csv-tables/%.native: panflute-csv-tables/%.source.md

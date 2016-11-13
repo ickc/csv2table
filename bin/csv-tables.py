@@ -8,7 +8,7 @@ e.g.
 ~~~csv
 title: "*Great* Title"
 has-header: False
-column-width: 0.25, 0.25, 0.25, 0.25
+table-width: 1
 alignment: AlignLeft, AlignRight, AlignCenter, AlignDefault
 ---
 **_Fruit_**,~~Price~~,_Number_,`Advantages`
@@ -35,23 +35,24 @@ import panflute
 def fenced_csv(options, data, element, doc):
     # read csv and convert to panflute table representation
     with io.StringIO(data) as f:
-        reader = csv.reader(f)
+        reader = list(csv.reader(f))
         body = []
         for row in reader:
             cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
             body.append(panflute.TableRow(*cells))
         # get no of columns for header
-        f.seek(0)
-        noOfColumn = len(list(reader)[0])
+        noOfColumn = len(reader[0])
     # read YAML metadata
     try:
         caption = options.get('title')
         column_width = options.get('column-width')
+        table_width = options.get('table-width',1.0)
         alignment = options.get('alignment')
         has_header = options.get('has-header',True)
     except AttributeError:
         caption = None
         column_width = None
+        table_width = 1.0
         alignment = None
         has_header = True
     # get caption
@@ -60,6 +61,10 @@ def fenced_csv(options, data, element, doc):
     # get column_width
     if column_width != None:
         column_width = [float(x) for x in column_width.split(",")]
+    else:
+        column_width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in list(reader)]) for i in range(noOfColumn)]
+        column_width_tot = sum(column_width_abs)
+        column_width = [column_width_abs[i]/column_width_tot*float(table_width) for i in range(noOfColumn)]
     # get alignment
     if alignment != None:
         alignment = [x.strip() for x in alignment.split(",")]
