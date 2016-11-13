@@ -33,72 +33,59 @@ terminaltablesTex := $(patsubst source/%.csv,terminaltables/%.tex,$(csvSource))
 terminaltablesPdf := $(patsubst source/%.csv,terminaltables/%.pdf,$(csvSource))
 terminaltables := $(terminaltablesMdSource) $(terminaltablesNative) $(terminaltablesMdTarget) $(terminaltablesHtml) $(terminaltablesTex) $(terminaltablesPdf)
 
-all: $(csv2table) $(placetable) $(terminaltables) # $(panfluteCsvTables)
+all: $(csv2table) $(placetable) $(terminaltables) $(panfluteCsvTables)
 clean:
-	rm -f $(csv2table) $(placetable) $(terminaltables) # $(panfluteCsvTables)
+	rm -f $(csv2table) $(placetable) $(terminaltables) $(panfluteCsvTables)
 
 # csv2table
 csv2table/%.source.md: source/%.csv
+	mkdir -p csv2table
 	printf "%s\n" "~~~{.table inlinemarkdown=yes}" > $@
 	cat $< >> $@
 	printf "%s\n" "" "~~~" >> $@
 csv2table/%.native: csv2table/%.source.md
-	mkdir -p csv2table
 	pandoc --filter pandoc-csv2table -s -o $@ $< -t native
 csv2table/%.target.md: csv2table/%.source.md
-	mkdir -p csv2table
 	pandoc --filter pandoc-csv2table -s -o $@ $<
 csv2table/%.html: csv2table/%.source.md
-	mkdir -p csv2table
 	pandoc --filter pandoc-csv2table -s -o $@ $<
 csv2table/%.tex: csv2table/%.source.md
-	mkdir -p csv2table
 	pandoc --filter pandoc-csv2table -s -o $@ $<
 csv2table/%.pdf: csv2table/%.source.md
-	mkdir -p csv2table
 	pandoc --filter pandoc-csv2table -s -o $@ $<
 
 # placetable
 placetable/%.source.md: source/%.csv
+	mkdir -p placetable
 	printf "%s\n" "~~~{.table inlinemarkdown=yes}" > $@
 	cat $< >> $@
 	printf "%s\n" "" "~~~" >> $@
 placetable/%.native: placetable/%.source.md
-	mkdir -p placetable
 	pandoc --filter pandoc-placetable -s -o $@ $< -t native
 placetable/%.target.md: placetable/%.source.md
-	mkdir -p placetable
 	pandoc --filter pandoc-placetable -s -o $@ $<
 placetable/%.html: placetable/%.source.md
-	mkdir -p placetable
 	pandoc --filter pandoc-placetable -s -o $@ $<
 placetable/%.tex: placetable/%.source.md
-	mkdir -p placetable
 	pandoc --filter pandoc-placetable -s -o $@ $<
 placetable/%.pdf: placetable/%.source.md
-	mkdir -p placetable
 	pandoc --filter pandoc-placetable -s -o $@ $< || true
 
 # panflute csv-tables
 panflute-csv-tables/%.source.md: source/%.csv
-	printf "%s\n" "~~~csv" "has-header: True" > $@
+	mkdir -p panflute-csv-tables
+	printf "%s\n" "~~~csv" "has-header: True" "---" > $@
 	cat $< >> $@
 	printf "%s\n" "" "~~~" >> $@
-
 panflute-csv-tables/%.native: panflute-csv-tables/%.source.md
-	mkdir -p panflute-csv-tables
 	pandoc --filter bin/csv-tables.py -s -o $@ $< -t native
 panflute-csv-tables/%.target.md: panflute-csv-tables/%.source.md
-	mkdir -p panflute-csv-tables
 	pandoc --filter bin/csv-tables.py -s -o $@ $<
 panflute-csv-tables/%.html: panflute-csv-tables/%.source.md
-	mkdir -p panflute-csv-tables
 	pandoc --filter bin/csv-tables.py -s -o $@ $<
 panflute-csv-tables/%.tex: panflute-csv-tables/%.source.md
-	mkdir -p panflute-csv-tables
 	pandoc --filter bin/csv-tables.py -s -o $@ $<
 panflute-csv-tables/%.pdf: panflute-csv-tables/%.source.md
-	mkdir -p panflute-csv-tables
 	pandoc --filter bin/csv-tables.py -s -o $@ $< || true
 
 # python terminaltables
@@ -106,17 +93,12 @@ terminaltables/%.source.md: source/%.csv
 	mkdir -p terminaltables
 	bin/pandoc_csv2tables.py $< > $@
 terminaltables/%.native: terminaltables/%.source.md
-	mkdir -p terminaltables
 	pandoc -s -o $@ $< -t native
 terminaltables/%.target.md: terminaltables/%.source.md
-	mkdir -p terminaltables
 	pandoc -s -o $@ $<
 terminaltables/%.html: terminaltables/%.source.md
-	mkdir -p terminaltables
 	pandoc -s -o $@ $<
 terminaltables/%.tex: terminaltables/%.source.md
-	mkdir -p terminaltables
 	pandoc -s -o $@ $<
 terminaltables/%.pdf: terminaltables/%.source.md
-	mkdir -p terminaltables
 	pandoc -s -o $@ $<
