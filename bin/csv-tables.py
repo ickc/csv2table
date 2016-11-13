@@ -8,7 +8,7 @@ e.g.
 ~~~csv
 title: "*Great* Title"
 has-header: False
-width: 0.25, 0.25, 0.25, 0.25
+column-width: 0.25, 0.25, 0.25, 0.25
 alignment: AlignLeft, AlignRight, AlignCenter, AlignDefault
 ---
 **_Fruit_**,~~Price~~,_Number_,`Advantages`
@@ -46,26 +46,26 @@ def fenced_csv(options, data, element, doc):
     # read YAML metadata
     try:
         caption = options.get('title')
-        width = options.get('width')
+        column_width = options.get('column-width')
         alignment = options.get('alignment')
         has_header = options.get('has-header',True)
     except AttributeError:
         caption = None
-        width = None
+        column_width = None
         alignment = None
         has_header = True
     # get caption
     if caption != None:
         caption = panflute.convert_text(caption)[0].content
-    # get width
-    if width != None:
-        width = [float(x) for x in width.split(",")]
+    # get column_width
+    if column_width != None:
+        column_width = [float(x) for x in column_width.split(",")]
     # get alignment
     if alignment != None:
         alignment = [x.strip() for x in alignment.split(",")]
     # finalize table according to metadata
     header = body.pop(0) if has_header else panflute.TableRow(*[panflute.TableCell() for i in range(noOfColumn)])
-    table = panflute.Table(*body, header=header, caption=caption, width=width, alignment=alignment)
+    table = panflute.Table(*body, header=header, caption=caption, width=column_width, alignment=alignment)
     return table
 
 # We'll only run this for CodeBlock elements of class 'csv'
