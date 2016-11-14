@@ -15,6 +15,7 @@ Panflute filter to parse CSV in fenced YAML code blocks
     corresponds to Left-aligned, Right-aligned, Center-aligned, Default-aligned respectively.
     e.g. LCRD for a table with 4 columns
     default: DDD...
+-   markdown: If CSV table cell contains markdown syntax or not. default: True
 
 When the metadata keys is invalid, the default will be used instead.
 
@@ -53,16 +54,6 @@ import csv
 import panflute
 
 def fenced_csv(options, data, element, doc):
-    # read csv and convert to panflute table representation
-    with io.StringIO(data) as f:
-        raw_table_list = list(csv.reader(f))
-    body = []
-    for row in raw_table_list:
-        cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
-        body.append(panflute.TableRow(*cells))
-    # get no of columns of the table
-    number_of_columns = len(raw_table_list[0])
-
     # read YAML metadata
     try:
         caption = options.get('title')
@@ -70,12 +61,14 @@ def fenced_csv(options, data, element, doc):
         table_width = options.get('table-width',1.0)
         alignment = options.get('alignment')
         has_header = options.get('has-header',True)
+        markdown = options.get('markdown',True)
     except AttributeError:
         caption = None
         column_width = None
         table_width = 1.0
         alignment = None
         has_header = True
+        markdown = True
     # check if YAML is valid
     ## column_width set to 0 when negative, set to None when invalid
     try:
@@ -90,6 +83,22 @@ def fenced_csv(options, data, element, doc):
     ## set has_header to True if invalid
     if not isinstance(has_header, bool):
         has_header = True
+    ## set markdown to True if invalid
+    if not isinstance(markdown, bool):
+        markdown = True
+
+    # read csv and convert to panflute table representation
+    with io.StringIO(data) as f:
+        raw_table_list = list(csv.reader(f))
+    body = []
+    for row in raw_table_list:
+        if markdown:
+            cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
+        else:
+            cells = [panflute.TableCell(panflute.Plain(panflute.Str(x))) for x in row]
+        body.append(panflute.TableRow(*cells))
+    # get no of columns of the table
+    number_of_columns = len(raw_table_list[0])
 
     # transform metadata
     ## convert caption from markdown
