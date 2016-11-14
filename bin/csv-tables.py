@@ -82,10 +82,16 @@ def fenced_csv(options, data, element, doc):
         table_width = 1.0
     ## set has_header to True if invalid
     if not isinstance(has_header, bool):
-        has_header = True
+        if str(has_header).lower() == "false":
+            has_header = False
+        else:
+            has_header = True
     ## set markdown to True if invalid
     if not isinstance(markdown, bool):
-        markdown = True
+        if str(markdown).lower() == "false":
+            markdown = False
+        else:
+            markdown = True
 
     # read csv and convert to panflute table representation
     with io.StringIO(data) as f:
