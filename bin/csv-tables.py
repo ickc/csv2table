@@ -55,19 +55,20 @@ import panflute
 def fenced_csv(options, data, element, doc):
     # read csv and convert to panflute table representation
     with io.StringIO(data) as f:
-        reader = list(csv.reader(f))
-        body = []
-        for row in reader:
-            cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
-            body.append(panflute.TableRow(*cells))
-        # get no of columns for header
-        noOfColumn = len(reader[0])
+        raw_table_list = list(csv.reader(f))
+    body = []
+    for row in raw_table_list:
+        cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
+        body.append(panflute.TableRow(*cells))
+    # get no of columns of the table
+    number_of_columns = len(raw_table_list[0])
+
     # read YAML metadata
     try:
-        caption = str(options.get('title'))
+        caption = options.get('title')
         column_width = options.get('column-width')
         table_width = options.get('table-width',1.0)
-        alignment = str(options.get('alignment'))
+        alignment = options.get('alignment')
         has_header = options.get('has-header',True)
     except AttributeError:
         caption = None
@@ -76,28 +77,34 @@ def fenced_csv(options, data, element, doc):
         alignment = None
         has_header = True
     # check if YAML is valid
+    ## column_width set to 0 when negative, set to None when invalid
     try:
-        column_width = [(float(x) if float(x)>0 else 0) for x in column_width]
+        column_width = [(float(x) if float(x) >= 0 else 0) for x in column_width]
     except (TypeError, ValueError):
         column_width = None
+    ## table_width: set to 1.0 if invalid or not positive
     try:
-        table_width = float(table_width)
+        table_width = float(table_width) if float(table_width) > 0 else 1.0
     except (TypeError, ValueError):
-        column_width = None
+        table_width = 1.0
+    ## set has_header to True if invalid
     if not isinstance(has_header, bool):
         has_header = True
-    # get caption
+
+    # transform metadata
+    ## convert caption from markdown
     if caption != None:
-        caption = panflute.convert_text(caption)[0].content
-    # get column_width
+        caption = panflute.convert_text(str(caption))[0].content
+    ## calculate column_width
     if column_width == None:
-        column_width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in list(reader)]) for i in range(noOfColumn)]
+        column_width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in raw_table_list]) for i in range(number_of_columns)]
         column_width_tot = sum(column_width_abs)
-        column_width = [column_width_abs[i]/column_width_tot*table_width for i in range(noOfColumn)]
-    # get alignment
+        column_width = [column_width_abs[i]/column_width_tot*table_width for i in range(number_of_columns)]
+    ## convert alignment string into pandoc format (AlignDefault, etc.)
     if alignment != None:
+        alignment = str(alignment)
         parsed_alignment = []
-        for i in range(noOfColumn):
+        for i in range(number_of_columns):
             try:
                 if alignment[i].lower() == "l":
                     parsed_alignment.append("AlignLeft")
@@ -108,11 +115,12 @@ def fenced_csv(options, data, element, doc):
                 else:
                     parsed_alignment.append("AlignDefault")
             except IndexError:
-                for i in range(noOfColumn-len(parsed_alignment)):
+                for i in range(number_of_columns-len(parsed_alignment)):
                     parsed_alignment.append("AlignDefault")
         alignment = parsed_alignment
+
     # finalize table according to metadata
-    header = body.pop(0) if has_header else None # panflute.TableRow(*[panflute.TableCell() for i in range(noOfColumn)]) # for panflute < 1.4.3
+    header = body.pop(0) if has_header else None # panflute.TableRow(*[panflute.TableCell() for i in range(number_of_columns)]) # for panflute < 1.4.3
     table = panflute.Table(*body, header=header, caption=caption, width=column_width, alignment=alignment)
     return table
 
