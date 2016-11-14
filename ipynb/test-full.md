@@ -6,7 +6,7 @@ column-width:
   - 0.2
   - 0.3
   - 0.4
-alignment: LRCD
+alignment: LRC
 ---
 **_Fruit_**,~~Price~~,_Number_,`Advantages`
 *Bananas~1~*,$1.34,12~units~,"Benefits of eating bananas 
