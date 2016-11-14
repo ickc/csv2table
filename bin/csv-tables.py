@@ -8,8 +8,12 @@ e.g.
 ~~~csv
 title: "*Great* Title"
 has-header: False
-table-width: 1
-alignment: AlignLeft, AlignRight, AlignCenter, AlignDefault
+column-width:
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+alignment: [AlignLeft, AlignRight, AlignCenter, AlignDefault]
 ---
 **_Fruit_**,~~Price~~,_Number_,`Advantages`
 *Bananas~1~*,$1.34,12~units~,"Benefits of eating bananas 
@@ -59,15 +63,13 @@ def fenced_csv(options, data, element, doc):
     if caption != None:
         caption = panflute.convert_text(caption)[0].content
     # get column_width
-    if column_width != None:
-        column_width = [float(x) for x in column_width.split(",")]
-    else:
+    if column_width == None:
         column_width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in list(reader)]) for i in range(noOfColumn)]
         column_width_tot = sum(column_width_abs)
         column_width = [column_width_abs[i]/column_width_tot*float(table_width) for i in range(noOfColumn)]
     # get alignment
-    if alignment != None:
-        alignment = [x.strip() for x in alignment.split(",")]
+#     if alignment != None:
+#         alignment = [x.strip() for x in alignment]
     # finalize table according to metadata
     header = body.pop(0) if has_header else panflute.TableRow(*[panflute.TableCell() for i in range(noOfColumn)])
     table = panflute.Table(*body, header=header, caption=caption, width=column_width, alignment=alignment)
