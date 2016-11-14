@@ -68,10 +68,20 @@ def fenced_csv(options, data, element, doc):
         column_width_tot = sum(column_width_abs)
         column_width = [column_width_abs[i]/column_width_tot*float(table_width) for i in range(noOfColumn)]
     # get alignment
-#     if alignment != None:
-#         alignment = [x.strip() for x in alignment]
+    if alignment != None:
+        parsed_alignment = []
+        for i in range(noOfColumn):
+            if alignment[i].lower() == "l":
+                parsed_alignment.append("AlignLeft")
+            elif alignment[i].lower() == "c":
+                parsed_alignment.append("AlignCenter")
+            elif alignment[i].lower() == "r":
+                parsed_alignment.append("AlignRight")
+            else:
+                parsed_alignment.append("AlignDefault")
+        alignment = parsed_alignment
     # finalize table according to metadata
-    header = body.pop(0) if has_header else panflute.TableRow(*[panflute.TableCell() for i in range(noOfColumn)])
+    header = body.pop(0) if has_header else None # panflute.TableRow(*[panflute.TableCell() for i in range(noOfColumn)]) # for panflute < 1.4.3
     table = panflute.Table(*body, header=header, caption=caption, width=column_width, alignment=alignment)
     return table
 
