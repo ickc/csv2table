@@ -1,5 +1,12 @@
 ~~~csv
-table-width: 2
+title: 0.1
+has-header: IDK
+column-width:
+- -0.1
+- -0.2
+- -0.3
+- -0.4
+alignment: 0.1
 ---
 **_Fruit_**,~~Price~~,_Number_,`Advantages`
 *Bananas~1~*,$1.34,12~units~,"Benefits of eating bananas 

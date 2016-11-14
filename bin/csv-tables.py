@@ -2,6 +2,22 @@
 
 """
 Panflute filter to parse CSV in fenced YAML code blocks
+
+5 metadata keys are recognized:
+
+-   title: the caption of the table. If omitted, no title will be inserted.
+-   has-header: If true, has a header row. default: true
+-   column-width: a list of relative width corresponding to the width of each columns.
+    default: auto calculate from the length of line in a (potentially multiline) cell.
+-   table-width: the relative width of the table (comparing to, say, \linewidth).
+    default: 1.0
+-   alignment: a string of characters among L,R,C,D, case-insensitive,
+    corresponds to Left-aligned, Right-aligned, Center-aligned, Default-aligned respectively.
+    e.g. LCRD for a table with 4 columns
+    default: DDD...
+
+When the metadata keys is invalid, the default will be used instead.
+
 e.g.
 
 ```markdown
@@ -48,16 +64,27 @@ def fenced_csv(options, data, element, doc):
         noOfColumn = len(reader[0])
     # read YAML metadata
     try:
-        caption = options.get('title')
+        caption = str(options.get('title'))
         column_width = options.get('column-width')
         table_width = options.get('table-width',1.0)
-        alignment = options.get('alignment')
+        alignment = str(options.get('alignment'))
         has_header = options.get('has-header',True)
     except AttributeError:
         caption = None
         column_width = None
         table_width = 1.0
         alignment = None
+        has_header = True
+    # check if YAML is valid
+    try:
+        column_width = [(float(x) if float(x)>0 else 0) for x in column_width]
+    except (TypeError, ValueError):
+        column_width = None
+    try:
+        table_width = float(table_width)
+    except (TypeError, ValueError):
+        column_width = None
+    if not isinstance(has_header, bool):
         has_header = True
     # get caption
     if caption != None:
@@ -66,7 +93,7 @@ def fenced_csv(options, data, element, doc):
     if column_width == None:
         column_width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in list(reader)]) for i in range(noOfColumn)]
         column_width_tot = sum(column_width_abs)
-        column_width = [column_width_abs[i]/column_width_tot*float(table_width) for i in range(noOfColumn)]
+        column_width = [column_width_abs[i]/column_width_tot*table_width for i in range(noOfColumn)]
     # get alignment
     if alignment != None:
         parsed_alignment = []
