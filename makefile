@@ -86,7 +86,7 @@ panflute-csv-tables/%.html: panflute-csv-tables/%.source.md
 panflute-csv-tables/%.tex: panflute-csv-tables/%.source.md
 	pandoc --filter bin/csv-tables.py -s -o $@ $<
 panflute-csv-tables/%.pdf: panflute-csv-tables/%.source.md
-	pandoc --filter bin/csv-tables.py -s -o $@ $< || true
+	pandoc --filter bin/csv-tables.py -s -o $@ $<
 
 # python terminaltables
 terminaltables/%.source.md: source/%.csv
