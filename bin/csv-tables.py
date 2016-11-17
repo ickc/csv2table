@@ -5,7 +5,7 @@ Panflute filter to parse CSV in fenced YAML code blocks
 
 5 metadata keys are recognized:
 
--   title: the caption of the table. If omitted, no title will be inserted.
+-   caption: the caption of the table. If omitted, no caption will be inserted.
 -   header: If true, has a header row. default: true
 -   column-width: a list of relative width corresponding to the width of each columns.
     default: auto calculate from the length of line in a (potentially multiline) cell.
@@ -23,7 +23,7 @@ e.g.
 
 ```markdown
 ~~~csv
-title: "*Great* Title"
+caption: "*Great* Title"
 header: False
 column-width:
   - 0.1
@@ -56,7 +56,7 @@ import panflute
 def fenced_csv(options, data, element, doc):
     # read YAML metadata
     try:
-        caption = options.get('title')
+        caption = options.get('caption')
         column_width = options.get('column-width')
         table_width = options.get('table-width',1.0)
         alignment = options.get('alignment')
