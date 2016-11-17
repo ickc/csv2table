@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 """
-Panflute filter to parse CSV in fenced YAML code blocks
+Panflute filter to parse table in fenced YAML code blocks.
+Currently only CSV table is supported.
 
-6 metadata keys are recognized:
+7 metadata keys are recognized:
 
 -   caption: the caption of the table. If omitted, no caption will be inserted.
 -   alignment: a string of characters among L,R,C,D, case-insensitive,
@@ -16,13 +17,15 @@ Panflute filter to parse CSV in fenced YAML code blocks
     default: 1.0
 -   header: If it has a header row. default: true
 -   markdown: If CSV table cell contains markdown syntax. default: True
+-   include: the path to an CSV file. If non-empty, override the CSV in the CodeBlock.
+    default: None
 
 When the metadata keys is invalid, the default will be used instead.
 
 e.g.
 
 ```markdown
-~~~csv
+~~~table
 ---
 caption: "*Great* Title"
 alignment: LRC
@@ -52,6 +55,7 @@ rendered block markdown**):
 """
 
 import io
+import os
 import csv
 import panflute
 
@@ -79,9 +83,10 @@ def get_table_options(options):
     table_width = options.get('table-width',1.0)
     header = options.get('header',True)
     markdown = options.get('markdown',True)
-    return (caption, alignment, width, table_width, header, markdown)
+    include = options.get('include',None)
+    return (caption, alignment, width, table_width, header, markdown, include)
 
-def check_table_options(width, table_width, header, markdown):
+def check_table_options(width, table_width, header, markdown, include):
     """
     It sets the varaibles to default if they are invalid:
     
@@ -100,7 +105,10 @@ def check_table_options(width, table_width, header, markdown):
         table_width = 1.0
     header = to_bool(header)
     markdown = to_bool(markdown)
-    return (width, table_width, header, markdown)
+    if include != None:
+        if not os.path.isfile(include):
+            include = None
+    return (width, table_width, header, markdown, include)
 
 def parse_table_options(caption, alignment, width, table_width, raw_table_list):
     """
@@ -141,12 +149,16 @@ def parse_table_options(caption, alignment, width, table_width, raw_table_list):
             width = None
     return (caption, alignment, width)
 
-def read_csv(data):
+def read_csv(data, include):
     """
     read csv and return the table in list
     """
-    with io.StringIO(data) as f:
-        raw_table_list = list(csv.reader(f))
+    if include != None:
+        with open(include) as f:
+            raw_table_list = list(csv.reader(f))
+    else:
+        with io.StringIO(data) as f:
+            raw_table_list = list(csv.reader(f))
     return raw_table_list
 
 def parse_table_list(raw_table_list, markdown):
@@ -162,13 +174,13 @@ def parse_table_list(raw_table_list, markdown):
         body.append(panflute.TableRow(*cells))
     return body
 
-def csv2table(options, data, element, doc):
+def convert2table(options, data, element, doc):
     # get table options from YAML metadata
-    caption, alignment, width, table_width, header, markdown = get_table_options(options)
+    caption, alignment, width, table_width, header, markdown, include = get_table_options(options)
     # check table options
-    width, table_width, header, markdown = check_table_options(width, table_width, header, markdown)
+    width, table_width, header, markdown, include = check_table_options(width, table_width, header, markdown, include)
     # parse csv to list
-    raw_table_list = read_csv(data)
+    raw_table_list = read_csv(data, include)
     # parse list to panflute table
     body = parse_table_list(raw_table_list, markdown)
     # parse table options
@@ -178,9 +190,9 @@ def csv2table(options, data, element, doc):
     table = panflute.Table(*body, caption=caption, alignment=alignment, width=width, header=header_row)
     return table
 
-# We'll only run this for CodeBlock elements of class 'csv'
+# We'll only run this for CodeBlock elements of class 'table'
 def main(doc=None):
-     return panflute.run_filter(panflute.yaml_filter, tag='csv', function=csv2table, strict_yaml=True)
+     return panflute.run_filter(panflute.yaml_filter, tag='table', function=convert2table, strict_yaml=True)
 
 if __name__ == '__main__':
     main()

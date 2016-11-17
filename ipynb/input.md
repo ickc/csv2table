@@ -1,4 +1,4 @@
-~~~csv
+~~~table
 ---
 caption: "*Great* Title"
 alignment: LRC
