@@ -55,20 +55,12 @@ import panflute
 
 def csv2table(options, data, element, doc):
     # read YAML metadata
-    try:
-        caption = options.get('caption')
-        width = options.get('width')
-        table_width = options.get('table-width',1.0)
-        alignment = options.get('alignment')
-        header = options.get('header',True)
-        markdown = options.get('markdown',True)
-    except AttributeError:
-        caption = None
-        width = None
-        table_width = 1.0
-        alignment = None
-        header = True
-        markdown = True
+    caption = options.get('caption')
+    width = options.get('width')
+    table_width = options.get('table-width',1.0)
+    alignment = options.get('alignment')
+    header = options.get('header',True)
+    markdown = options.get('markdown',True)
     # check if YAML is valid
     ## width set to 0 when negative, set to None when invalid
     try:
