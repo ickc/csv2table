@@ -100,14 +100,7 @@ def get_table_options(options):
             markdown = True
     return (caption, width, table_width, alignment, header, markdown)
 
-
-
-def csv2table(options, data, element, doc):
-    # read YAML metadata
-    caption, width, table_width, alignment, header, markdown = get_table_options(options)
-    ## convert caption from markdown
-    if caption != None:
-        caption = panflute.convert_text(str(caption))[0].content
+def parse_csv(data, markdown):
     # read csv and convert to panflute table representation
     with io.StringIO(data) as f:
         raw_table_list = list(csv.reader(f))
@@ -120,6 +113,7 @@ def csv2table(options, data, element, doc):
         body.append(panflute.TableRow(*cells))
     # get no of columns of the table
     number_of_columns = len(raw_table_list[0])
+    return (body, number_of_columns)
 
     # transform metadata
     ## calculate width
@@ -130,6 +124,14 @@ def csv2table(options, data, element, doc):
             width = [width_abs[i]/width_tot*table_width for i in range(number_of_columns)]
         except ZeroDivisionError:
             width = None
+
+def csv2table(options, data, element, doc):
+    # read YAML metadata
+    caption, width, table_width, alignment, header, markdown = get_table_options(options)
+    ## convert caption from markdown
+    if caption != None:
+        caption = panflute.convert_text(str(caption))[0].content
+    body, number_of_columns = parse_csv(data, markdown)
     ## convert alignment string into pandoc format (AlignDefault, etc.)
     if alignment != None:
         alignment = str(alignment)
