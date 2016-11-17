@@ -7,7 +7,7 @@ Panflute filter to parse CSV in fenced YAML code blocks
 
 -   caption: the caption of the table. If omitted, no caption will be inserted.
 -   header: If true, has a header row. default: true
--   column-width: a list of relative width corresponding to the width of each columns.
+-   width: a list of relative width corresponding to the width of each columns.
     default: auto calculate from the length of line in a (potentially multiline) cell.
 -   table-width: the relative width of the table (comparing to, say, \linewidth).
     default: 1.0
@@ -25,7 +25,7 @@ e.g.
 ~~~csv
 caption: "*Great* Title"
 header: False
-column-width:
+width:
   - 0.1
   - 0.2
   - 0.3
@@ -57,24 +57,24 @@ def fenced_csv(options, data, element, doc):
     # read YAML metadata
     try:
         caption = options.get('caption')
-        column_width = options.get('column-width')
+        width = options.get('width')
         table_width = options.get('table-width',1.0)
         alignment = options.get('alignment')
         header = options.get('header',True)
         markdown = options.get('markdown',True)
     except AttributeError:
         caption = None
-        column_width = None
+        width = None
         table_width = 1.0
         alignment = None
         header = True
         markdown = True
     # check if YAML is valid
-    ## column_width set to 0 when negative, set to None when invalid
+    ## width set to 0 when negative, set to None when invalid
     try:
-        column_width = [(float(x) if float(x) >= 0 else 0) for x in column_width]
+        width = [(float(x) if float(x) >= 0 else 0) for x in width]
     except (TypeError, ValueError):
-        column_width = None
+        width = None
     ## table_width: set to 1.0 if invalid or not positive
     try:
         table_width = float(table_width) if float(table_width) > 0 else 1.0
@@ -110,11 +110,11 @@ def fenced_csv(options, data, element, doc):
     ## convert caption from markdown
     if caption != None:
         caption = panflute.convert_text(str(caption))[0].content
-    ## calculate column_width
-    if column_width == None:
-        column_width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in raw_table_list]) for i in range(number_of_columns)]
-        column_width_tot = sum(column_width_abs)
-        column_width = [column_width_abs[i]/column_width_tot*table_width for i in range(number_of_columns)]
+    ## calculate width
+    if width == None:
+        width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in raw_table_list]) for i in range(number_of_columns)]
+        width_tot = sum(width_abs)
+        width = [width_abs[i]/width_tot*table_width for i in range(number_of_columns)]
     ## convert alignment string into pandoc format (AlignDefault, etc.)
     if alignment != None:
         alignment = str(alignment)
@@ -136,7 +136,7 @@ def fenced_csv(options, data, element, doc):
 
     # finalize table according to metadata
     header_row = body.pop(0) if header else None # panflute.TableRow(*[panflute.TableCell() for i in range(number_of_columns)]) # for panflute < 1.4.3
-    table = panflute.Table(*body, header=header_row, caption=caption, width=column_width, alignment=alignment)
+    table = panflute.Table(*body, header=header_row, caption=caption, width=width, alignment=alignment)
     return table
 
 # We'll only run this for CodeBlock elements of class 'csv'
