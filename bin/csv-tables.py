@@ -6,7 +6,7 @@ Panflute filter to parse CSV in fenced YAML code blocks
 5 metadata keys are recognized:
 
 -   title: the caption of the table. If omitted, no title will be inserted.
--   has-header: If true, has a header row. default: true
+-   header: If true, has a header row. default: true
 -   column-width: a list of relative width corresponding to the width of each columns.
     default: auto calculate from the length of line in a (potentially multiline) cell.
 -   table-width: the relative width of the table (comparing to, say, \linewidth).
@@ -24,7 +24,7 @@ e.g.
 ```markdown
 ~~~csv
 title: "*Great* Title"
-has-header: False
+header: False
 column-width:
   - 0.1
   - 0.2
@@ -60,14 +60,14 @@ def fenced_csv(options, data, element, doc):
         column_width = options.get('column-width')
         table_width = options.get('table-width',1.0)
         alignment = options.get('alignment')
-        has_header = options.get('has-header',True)
+        header = options.get('header',True)
         markdown = options.get('markdown',True)
     except AttributeError:
         caption = None
         column_width = None
         table_width = 1.0
         alignment = None
-        has_header = True
+        header = True
         markdown = True
     # check if YAML is valid
     ## column_width set to 0 when negative, set to None when invalid
@@ -80,12 +80,12 @@ def fenced_csv(options, data, element, doc):
         table_width = float(table_width) if float(table_width) > 0 else 1.0
     except (TypeError, ValueError):
         table_width = 1.0
-    ## set has_header to True if invalid
-    if not isinstance(has_header, bool):
-        if str(has_header).lower() == "false":
-            has_header = False
+    ## set header to True if invalid
+    if not isinstance(header, bool):
+        if str(header).lower() == "false":
+            header = False
         else:
-            has_header = True
+            header = True
     ## set markdown to True if invalid
     if not isinstance(markdown, bool):
         if str(markdown).lower() == "false":
@@ -135,10 +135,10 @@ def fenced_csv(options, data, element, doc):
         alignment = parsed_alignment
 
     # finalize table according to metadata
-    header = body.pop(0) if has_header else None # panflute.TableRow(*[panflute.TableCell() for i in range(number_of_columns)]) # for panflute < 1.4.3
-    table = panflute.Table(*body, header=header, caption=caption, width=column_width, alignment=alignment)
+    header_row = body.pop(0) if header else None # panflute.TableRow(*[panflute.TableCell() for i in range(number_of_columns)]) # for panflute < 1.4.3
+    table = panflute.Table(*body, header=header_row, caption=caption, width=column_width, alignment=alignment)
     return table
 
 # We'll only run this for CodeBlock elements of class 'csv'
 if __name__ == '__main__':
-    panflute.toJSONFilter(panflute.yaml_filter, tag='csv', function=fenced_csv)
+    panflute.toJSONFilter(panflute.yaml_filter, tag='csv', function=fenced_csv, strict_yaml=True)
