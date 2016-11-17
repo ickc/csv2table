@@ -53,7 +53,7 @@ import io
 import csv
 import panflute
 
-def fenced_csv(options, data, element, doc):
+def csv2table(options, data, element, doc):
     # read YAML metadata
     try:
         caption = options.get('caption')
@@ -144,7 +144,7 @@ def fenced_csv(options, data, element, doc):
 
 # We'll only run this for CodeBlock elements of class 'csv'
 def main(doc=None):
-     return panflute.run_filter(panflute.yaml_filter, tag='csv', function=fenced_csv, strict_yaml=True)
+     return panflute.run_filter(panflute.yaml_filter, tag='csv', function=csv2table, strict_yaml=True)
 
 if __name__ == '__main__':
     main()
