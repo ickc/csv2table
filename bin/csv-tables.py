@@ -140,5 +140,8 @@ def fenced_csv(options, data, element, doc):
     return table
 
 # We'll only run this for CodeBlock elements of class 'csv'
+def main(doc=None):
+     return panflute.run_filter(panflute.yaml_filter, tag='csv', function=fenced_csv, strict_yaml=True)
+
 if __name__ == '__main__':
-    panflute.toJSONFilter(panflute.yaml_filter, tag='csv', function=fenced_csv, strict_yaml=True)
+    main()
