@@ -56,14 +56,17 @@ import panflute
 def yaml2table_metadata(options):
     """
     It parses the options output from `panflute.yaml_filter` and
-    return it as variables (caption, width, table_width, alignment, header, markdown).
+    return it as variables `(caption, width, table_width, alignment, header, markdown)`.
     
     It also check if the metadata is valid:
     
-    - width set to None when invalid, each element in width set to 0 when negative
-    - table_width: set to 1.0 if invalid or not positive
-    - set header to True if invalid
-    - set markdown to True if invalid
+    - `width` set to `None` when invalid, each element in `width` set to `0` when negative
+    - `table_width`: set to `1.0` if invalid or not positive
+    - set `header` to `True` if invalid
+    - set `markdown` to `True` if invalid
+    
+    `caption` is assumed to contain markdown, as in standard pandoc YAML metadata
+    
     """
     caption = options.get('caption')
     width = options.get('width')
@@ -89,6 +92,9 @@ def yaml2table_metadata(options):
             markdown = False
         else:
             markdown = True
+    ## convert caption from markdown
+    if caption != None:
+        caption = panflute.convert_text(str(caption))[0].content
     return (caption, width, table_width, alignment, header, markdown)
 
 
@@ -110,9 +116,6 @@ def csv2table(options, data, element, doc):
     number_of_columns = len(raw_table_list[0])
 
     # transform metadata
-    ## convert caption from markdown
-    if caption != None:
-        caption = panflute.convert_text(str(caption))[0].content
     ## calculate width
     if width == None:
         width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in raw_table_list]) for i in range(number_of_columns)]
