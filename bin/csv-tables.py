@@ -53,38 +53,49 @@ import io
 import csv
 import panflute
 
-def csv2table(options, data, element, doc):
-    # read YAML metadata
+def yaml2table_metadata(options):
+    """
+    It parses the options output from `panflute.yaml_filter` and
+    return it as variables (caption, width, table_width, alignment, header, markdown).
+    
+    It also check if the metadata is valid:
+    
+    - width set to None when invalid, each element in width set to 0 when negative
+    - table_width: set to 1.0 if invalid or not positive
+    - set header to True if invalid
+    - set markdown to True if invalid
+    """
     caption = options.get('caption')
     width = options.get('width')
     table_width = options.get('table-width',1.0)
     alignment = options.get('alignment')
     header = options.get('header',True)
     markdown = options.get('markdown',True)
-    # check if YAML is valid
-    ## width set to 0 when negative, set to None when invalid
     try:
         width = [(float(x) if float(x) >= 0 else 0) for x in width]
     except (TypeError, ValueError):
         width = None
-    ## table_width: set to 1.0 if invalid or not positive
     try:
         table_width = float(table_width) if float(table_width) > 0 else 1.0
     except (TypeError, ValueError):
         table_width = 1.0
-    ## set header to True if invalid
     if not isinstance(header, bool):
         if str(header).lower() == "false":
             header = False
         else:
             header = True
-    ## set markdown to True if invalid
     if not isinstance(markdown, bool):
         if str(markdown).lower() == "false":
             markdown = False
         else:
             markdown = True
+    return (caption, width, table_width, alignment, header, markdown)
 
+
+
+def csv2table(options, data, element, doc):
+    # read YAML metadata
+    caption, width, table_width, alignment, header, markdown = yaml2table_metadata(options)
     # read csv and convert to panflute table representation
     with io.StringIO(data) as f:
         raw_table_list = list(csv.reader(f))
