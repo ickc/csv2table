@@ -14,8 +14,8 @@ Panflute filter to parse CSV in fenced YAML code blocks
     default: auto calculate from the length of line in a (potentially multiline) cell.
 -   table-width: the relative width of the table (comparing to, say, \linewidth).
     default: 1.0
--   header: If true, has a header row. default: true
--   markdown: If CSV table cell contains markdown syntax or not. default: True
+-   header: If it has a header row. default: true
+-   markdown: If CSV table cell contains markdown syntax. default: True
 
 When the metadata keys is invalid, the default will be used instead.
 
@@ -58,7 +58,8 @@ import panflute
 def to_bool(x):
     """
     Do nothing if x is boolean,
-    return `False` if it is "false" or "no" (case-insensitive).
+    return `False` if it is "false" or "no" (case-insensitive),
+    otherwise return `True`.
     """
     if not isinstance(x, bool):
         if str(x).lower() in ("false", "no"):
@@ -71,60 +72,37 @@ def get_table_options(options):
     """
     It parses the options output from `panflute.yaml_filter` and
     return it as variables `(caption, alignment, width, table_width, header, markdown)`.
-    
-    It also check set the followings to default if they are invalid:
+    """
+    caption = options.get('caption')
+    alignment = options.get('alignment')
+    width = options.get('width')
+    table_width = options.get('table-width',1.0)
+    header = options.get('header',True)
+    markdown = options.get('markdown',True)
+    return (caption, alignment, width, table_width, header, markdown)
+
+def check_table_options(width, table_width, header, markdown):
+    """
+    It sets the varaibles to default if they are invalid:
     
     - `width` set to `None` when invalid, each element in `width` set to `0` when negative
     - `table_width`: set to `1.0` if invalid or not positive
     - set `header` to `True` if invalid
     - set `markdown` to `True` if invalid
     """
-    # get caption
-    caption = options.get('caption')
-    # get alignment
-    alignment = options.get('alignment')
-    # get width
     try:
-        width = options.get('width')
         width = [(float(x) if float(x) >= 0 else 0) for x in width]
     except (TypeError, ValueError):
         width = None
-    # get table_width
     try:
-        table_width = options.get('table-width',1.0)
         table_width = float(table_width) if float(table_width) > 0 else 1.0
     except (TypeError, ValueError):
         table_width = 1.0
-    # get header
-    header = options.get('header',True)
     header = to_bool(header)
-    # get markdown
-    markdown = options.get('markdown',True)
     markdown = to_bool(markdown)
-    return (caption, alignment, width, table_width, header, markdown)
+    return (width, table_width, header, markdown)
 
-def read_csv(data):
-    """
-    read csv and return the table in list
-    """
-    with io.StringIO(data) as f:
-        raw_table_list = list(csv.reader(f))
-    return raw_table_list
-
-def parse_table_list(raw_table_list, markdown):
-    """
-    read table in list and return panflute table format
-    """
-    body = []
-    for row in raw_table_list:
-        if markdown:
-            cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
-        else:
-            cells = [panflute.TableCell(panflute.Plain(panflute.Str(x))) for x in row]
-        body.append(panflute.TableRow(*cells))
-    return body
-
-def parse_metadata(caption, alignment, width, table_width, raw_table_list):
+def parse_table_options(caption, alignment, width, table_width, raw_table_list):
     """
     `caption` is assumed to contain markdown, as in standard pandoc YAML metadata
     `alignment` string is parsed into pandoc format (AlignDefault, etc.)
@@ -163,14 +141,38 @@ def parse_metadata(caption, alignment, width, table_width, raw_table_list):
             width = None
     return (caption, alignment, width)
 
+def read_csv(data):
+    """
+    read csv and return the table in list
+    """
+    with io.StringIO(data) as f:
+        raw_table_list = list(csv.reader(f))
+    return raw_table_list
+
+def parse_table_list(raw_table_list, markdown):
+    """
+    read table in list and return panflute table format
+    """
+    body = []
+    for row in raw_table_list:
+        if markdown:
+            cells = [panflute.TableCell(*panflute.convert_text(x)) for x in row]
+        else:
+            cells = [panflute.TableCell(panflute.Plain(panflute.Str(x))) for x in row]
+        body.append(panflute.TableRow(*cells))
+    return body
+
 def csv2table(options, data, element, doc):
-    # read YAML metadata
+    # get table options from YAML metadata
     caption, alignment, width, table_width, header, markdown = get_table_options(options)
+    # check table options
+    width, table_width, header, markdown = check_table_options(width, table_width, header, markdown)
     # parse csv to list
     raw_table_list = read_csv(data)
     # parse list to panflute table
     body = parse_table_list(raw_table_list, markdown)
-    caption, alignment, width = parse_metadata(caption, alignment, width, table_width, raw_table_list)
+    # parse table options
+    caption, alignment, width = parse_table_options(caption, alignment, width, table_width, raw_table_list)
     # finalize table according to metadata
     header_row = body.pop(0) if header else None
     table = panflute.Table(*body, caption=caption, alignment=alignment, width=width, header=header_row)
