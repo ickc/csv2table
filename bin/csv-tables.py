@@ -53,6 +53,14 @@ import io
 import csv
 import panflute
 
+def to_bool(x):
+    if not isinstance(x, bool):
+        if str(x).lower() in ("yes", "no"):
+            x = False
+        else:
+            x = True
+    return x
+
 def get_table_options(options):
     """
     It parses the options output from `panflute.yaml_filter` and
@@ -86,18 +94,10 @@ def get_table_options(options):
     alignment = options.get('alignment')
     # get header
     header = options.get('header',True)
-    if not isinstance(header, bool):
-        if str(header).lower() == "false":
-            header = False
-        else:
-            header = True
+    header = to_bool(header)
     # get markdown
     markdown = options.get('markdown',True)
-    if not isinstance(markdown, bool):
-        if str(markdown).lower() == "false":
-            markdown = False
-        else:
-            markdown = True
+    markdown = to_bool(markdown)
     return (caption, width, table_width, alignment, header, markdown)
 
 def parse_csv(data, markdown):
