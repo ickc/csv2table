@@ -114,7 +114,10 @@ def fenced_csv(options, data, element, doc):
     if width == None:
         width_abs = [max([max([len(line) for line in row[i].split("\n")]) for row in raw_table_list]) for i in range(number_of_columns)]
         width_tot = sum(width_abs)
-        width = [width_abs[i]/width_tot*table_width for i in range(number_of_columns)]
+        try:
+            width = [width_abs[i]/width_tot*table_width for i in range(number_of_columns)]
+        except ZeroDivisionError:
+            width = None
     ## convert alignment string into pandoc format (AlignDefault, etc.)
     if alignment != None:
         alignment = str(alignment)
