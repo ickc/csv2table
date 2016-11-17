@@ -113,8 +113,9 @@ def parse_csv(data, markdown):
         body.append(panflute.TableRow(*cells))
     # get no of columns of the table
     number_of_columns = len(raw_table_list[0])
-    return (body, number_of_columns)
+    return (body, number_of_columns, raw_table_list)
 
+def parse_metadata(width, table_width, caption, alignment, number_of_columns, raw_table_list):
     # transform metadata
     ## calculate width
     if width == None:
@@ -124,14 +125,9 @@ def parse_csv(data, markdown):
             width = [width_abs[i]/width_tot*table_width for i in range(number_of_columns)]
         except ZeroDivisionError:
             width = None
-
-def csv2table(options, data, element, doc):
-    # read YAML metadata
-    caption, width, table_width, alignment, header, markdown = get_table_options(options)
     ## convert caption from markdown
     if caption != None:
         caption = panflute.convert_text(str(caption))[0].content
-    body, number_of_columns = parse_csv(data, markdown)
     ## convert alignment string into pandoc format (AlignDefault, etc.)
     if alignment != None:
         alignment = str(alignment)
@@ -150,7 +146,13 @@ def csv2table(options, data, element, doc):
                 for i in range(number_of_columns-len(parsed_alignment)):
                     parsed_alignment.append("AlignDefault")
         alignment = parsed_alignment
+    return (width, caption, alignment)
 
+def csv2table(options, data, element, doc):
+    # read YAML metadata
+    caption, width, table_width, alignment, header, markdown = get_table_options(options)
+    body, number_of_columns, raw_table_list = parse_csv(data, markdown)
+    width, caption, alignment = parse_metadata(width, table_width, caption, alignment, number_of_columns, raw_table_list)
     # finalize table according to metadata
     header_row = body.pop(0) if header else None # panflute.TableRow(*[panflute.TableCell() for i in range(number_of_columns)]) # for panflute < 1.4.3
     table = panflute.Table(*body, header=header_row, caption=caption, width=width, alignment=alignment)
