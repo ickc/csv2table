@@ -1,23 +1,18 @@
-Full Test
-=========
++--------+---------------------+--------------------------+
+| First  | defaulted to be     | can be disabled          |
+| row    | header row          |                          |
++========+=====================+==========================+
+| 1      | cell can contain    | It can be aribrary block |
+|        | **markdown**        | element:                 |
+|        |                     |                          |
+|        |                     | -   following standard   |
+|        |                     |     markdown syntax      |
+|        |                     | -   like this            |
++--------+---------------------+--------------------------+
+| 2      | Any markdown        | $$E = mc^2$$             |
+|        | syntax, e.g.        |                          |
++--------+---------------------+--------------------------+
 
-+---------+----------------+-----------------------+------------------------------+
-| ***Frui | ~~Price~~      | *Number*              | `Advantages`                 |
-| t***    |                |                       |                              |
-+=========+================+=======================+==============================+
-| *Banana | \$1.34         | 12~units~             | Benefits of eating bananas   |
-| s~1~*   |                |                       | (**Note the appropriately    |
-|         |                |                       | rendered block markdown**):  |
-|         |                |                       |                              |
-|         |                |                       | -   *built-in wrapper*       |
-|         |                |                       | -   ~~**bright color**~~     |
-+---------+----------------+-----------------------+------------------------------+
-| *Orange | \$2.10         | 5^10^~units~          | Benefits of eating oranges:  |
-| s~2~*   |                |                       |                              |
-|         |                |                       | -   **cures** scurvy         |
-|         |                |                       | -   `tasty`                  |
-+---------+----------------+-----------------------+------------------------------+
-
-: *Great* Title
+: *Awesome* **Markdown** Table
 
 
