@@ -1,0 +1,2 @@
+[Header 1 ("full-test",[],[]) [Str "Full",Space,Str "Test"]
+,CodeBlock ("",["table"],[]) "---\ncaption: \"*Great* Title\"\nalignment: LRCD\nwidth:\n  - 0.1\n  - 0.2\n  - 0.3\n  - 0.4\nheader: True\nmarkdown: True\n...\n**_Fruit_**,~~Price~~,_Number_,`Advantages`\n*Bananas~1~*,$1.34,12~units~,\"Benefits of eating bananas\n(**Note the appropriately\nrendered block markdown**):\n\n- _built-in wrapper_\n- ~~**bright color**~~\n\n\"\n*Oranges~2~*,$2.10,5^10^~units~,\"Benefits of eating oranges:\n\n- **cures** scurvy\n- `tasty`\""]

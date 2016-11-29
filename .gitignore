@@ -5,3 +5,4 @@ panflute-csv-tables/
 terminaltables/
 source/*.md
 ipynb/.ipynb_checkpoints/
+.idea/
