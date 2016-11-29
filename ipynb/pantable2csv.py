@@ -4,26 +4,15 @@ import io
 import csv
 import yaml
 
-def json2markdown(*json):
+def ast2markdown(*ast):
     """
-    convert a panflute json into markdown
+    convert a panflute ast into markdown
     """
-    # this should work, probably panflute has a bug?
-#     md = panflute.convert_text(json, input_format='json', output_format='markdown')
-    # temporary solution: plain text instead
-    md = ''.join([panflute.stringify(item, newlines=False) for item in json])
-    return md
+    return panflute.convert_text(ast, input_format='panflute', output_format='markdown')
 
 def get_table_options(elem):
     """
-    parse the content of Table in json and returns a dictionary of options
-    # get
-    get_caption
-    get_alignment
-    get_width
-    get_header
-    get_content
-    @todo
+    parse the content of Table in ast and returns a dictionary of options
     """
     options = {}
     options['caption'] = elem.caption
@@ -35,13 +24,13 @@ def get_table_options(elem):
 
 def parse_table_options(options):
     """
-    parse the options:
-    # trasnform (width do nothing?)
-    caption2markdown
-    alignment_list2string
-    header_tobool                    @done
+    parse the options
     """
-    options['caption'] = json2markdown(panflute.Para(*options['caption']))
+    # caption: panflute ast to markdown
+    if options['caption']:
+        options['caption'] = ast2markdown(panflute.Para(*options['caption']))
+    else:
+        del options['caption']
     # parse alignment
     parsed_alignment = []
     for alignment in options['alignment']:
@@ -54,7 +43,9 @@ def parse_table_options(options):
         elif alignment == "AlignDefault":
             parsed_alignment.append("D")
     options['alignment'] = "".join(parsed_alignment)
+    # table-width from width
     options['table-width'] = sum(options['width'])
+    # header: False if empty header row, else True
     options['header'] = bool(panflute.stringify(options['header']))
     return
 
@@ -71,7 +62,7 @@ def Table2list(Table):
     """
     convert a pandoc table into a 2D list
     """
-    return [[json2markdown(*cell.content) for cell in row.content] for row in Table]
+    return [[ast2markdown(*cell.content) for cell in row.content] for row in Table]
 
 
 def list2csv(table_list):
@@ -86,23 +77,33 @@ def options2yaml(options):
 
 def action(elem, doc):
     """
-    combine_header_content           @done
-    Table2list                       @done
-    # prepare code block
-    toyaml                           @done
-    tocsv                            @done
+    find Table element and return a csv table in code-block with class "table"
     """
     if isinstance(elem, panflute.Table):
+        # obtain options from Table
         options = get_table_options(elem)
         parse_table_options(options)
+        # table in AST
         table_body = get_table_body(options, elem)
+        # table in list
         table_list = Table2list(table_body)
+        # table in CSV
         csv_table = list2csv(table_list)
+        # option in YAML
         yaml_metadata = options2yaml(options)
         code_block = "---\n" + yaml_metadata + "---\n" + csv_table
         return panflute.CodeBlock(code_block, classes=["table"])
-        # yaml.dump(data, stream=None)
     return
 
-if __name__ == '__main__':
+def main(_=None):
+    """
+    Any native pandoc tables will be converted into the CSV table format used by pantable:
+    
+    - in code-block with class table
+    - metadata in YAML
+    - table in CSV
+    """
     panflute.run_filter(action)
+
+if __name__ == '__main__':
+    main()
