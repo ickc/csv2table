@@ -49,7 +49,6 @@ all: $(testAll) $(docsAll)
 docs: $(docsAll)
 readme: docs
 test: pytest pep8 pylint
-	coverage html
 
 clean:
 	rm -f .coverage $(testAll) README.html
