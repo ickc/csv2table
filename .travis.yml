@@ -20,6 +20,7 @@ matrix:
   fast_finish: true
 install:
   - pip install -U pip
+  - pip install -r requirements.txt
   - pip install -e .[test]
 # command to run tests
 script:
