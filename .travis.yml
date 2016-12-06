@@ -18,6 +18,7 @@ python:
   - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
 matrix:
   allow_failures:
+    - python: "3.2"
     - python: "3.5-dev"
     - python: "3.6-dev"
     - python: "nightly"
