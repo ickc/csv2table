@@ -31,7 +31,7 @@ pandocArgReadmePypi := $(pandocArgFragment) -s -t rst --reference-location=block
 
 test := $(wildcard tests/*.csv)
 testMarkdown := $(patsubst %.csv,%.md,$(test))
-testPdf := $(patsubst %.md,%.pdf,$(test))
+testPdf := $(patsubst %.csv,%.pdf,$(test))
 testAll := $(testMarkdown) $(testPdf)
 
 docs := $(wildcard docs/*.md)
