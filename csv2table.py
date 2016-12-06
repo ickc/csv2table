@@ -9,4 +9,4 @@ if __name__ == "__main__":
     table = AsciiTable(data)
     table.inner_row_border = True
     table.CHAR_H_INNER_HORIZONTAL = '='
-    print(table.table)
+    sys.stdout.write(table.table)
