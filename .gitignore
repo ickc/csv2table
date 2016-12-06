@@ -1,7 +1,7 @@
 # macOS files
 .DS_Store
 
-tests/*.native
+tests/test_*.md
 tests/*.pdf
 
 # python auxiliary 
