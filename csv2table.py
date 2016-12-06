@@ -9,7 +9,7 @@ import csv
 import sys
 import terminaltables
 
-__version__ = '0.3'
+__version__ = '0.4'
 
 
 def main(args):
@@ -19,7 +19,7 @@ def main(args):
     data = list(csv.reader(args.infile))
     table = terminaltables.AsciiTable(data)
     table.inner_row_border = True
-    if not args.noheader:
+    if not args.no_header:
         table.CHAR_H_INNER_HORIZONTAL = '='
     if not args.caption:
         output = table.table
@@ -33,7 +33,7 @@ parser.set_defaults(func=main)
 parser.add_argument('--version', action='version', version=__version__)
 parser.add_argument(
     '--caption', help='The caption in the title, which will be print as pandoc styled caption.')
-parser.add_argument('--noheader', action='store_true',
+parser.add_argument('--no-header', action='store_true',
                     help='If not specified, treat 1st row as header row.')
 # IO
 parser.add_argument('infile', nargs='?',

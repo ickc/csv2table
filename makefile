@@ -68,7 +68,7 @@ Clean:
 %-caption.md: %.csv
 	./csv2table.py --caption '*Awesome* **Markdown** Table' $< $@
 %-noheader.md: %.csv
-	./csv2table.py --noheader $< $@
+	./csv2table.py --no-header $< $@
 
 
 %.native: %.md 
