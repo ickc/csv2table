@@ -13,6 +13,9 @@ __version__ = '0.2'
 
 
 def main(args):
+    """
+    Main function to turn CSV into grid tables using args from argparse
+    """
     data = list(csv.reader(args.infile))
     table = terminaltables.AsciiTable(data)
     table.inner_row_border = True
