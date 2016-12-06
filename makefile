@@ -107,7 +107,7 @@ init:
 	pip install -r requirements.txt
 	pip install -r tests/requirements.txt
 
-pytest: $(testMarkdown)
+pytest: $(testMd)
 	python3 -m pytest -vv tests
 pytestLite:
 	python3 -m pytest -vv tests
