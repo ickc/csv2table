@@ -1,26 +1,36 @@
+# os: linux and sudo: false is assumed, which means it is using container-based Ubuntu 12.04
+language: python
+cache:
+  - pip
+# build matrix: different python and pandoc versions
+python:
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  # - "3.5-dev" # 3.5 development branch
+  # - "3.6-dev" # 3.6 development branch
+  # - "nightly" # currently points to 3.7-dev
+  # - "pypy3"
 matrix:
-    include:
-        - os: linux
-          sudo: required
-          dist: trusty
-          language: r
-          addons:
-            apt:
-              packages:
-              - ghc
-              - cabal-install
-          install:
-              - pip install -U pandocfilters tabulate terminaltables astropy openpyxl pillow pyyaml
-              - tlmgr install latexmk physics cancel fourier utopia
-              - cabal update
-              - cabal install pandoc pandoc-csv2table
-              - cabal install -f inlineMarkdown pandoc-placetable
-          cache:
-            packages: true
-            pip: true
-            directories:
-            - $HOME/.ghc
-            - $HOME/.cabal
-            - $HOME/.stack
+  allow_failures:
+    - python: "3.5-dev"
+    - python: "3.6-dev"
+    - python: "nightly"
+    - python: "pypy3"
+  fast_finish: true
+install:
+  - pip install -U pip
+  - pip install -e .[test]
+# command to run tests
 script:
-    - export PATH="$HOME/.cabal/bin:$PATH" && make -j4
+  - make -j4 test
+after_success:
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then coveralls; else printf "skip coveralls"; fi;
+deploy:
+  provider: pypi
+  user: ickc
+  password: $pypi_password
+  skip_cleanup: true
+  on:
+    tags: true
+    python: "3.5"

@@ -1,8 +1,24 @@
+# macOS files
 .DS_Store
-csv2table/
-placetable/
-panflute-csv-tables/
-terminaltables/
-source/*.md
-ipynb/.ipynb_checkpoints/
+
+tests/*.native
+tests/*.pdf
+
+# python auxiliary 
+__pycache__/
+.cache
+*.pyc
+
+# pypi
+dist/
+pantable.egg-info/
+
+# coverage
+.coverage
+htmlcov/
+
+# pycharm
 .idea/
+
+# rst2html
+README.html
