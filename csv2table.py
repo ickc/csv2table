@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 caption
 header
@@ -9,7 +9,7 @@ import csv
 import sys
 import terminaltables
 
-__version__ = '0.2.1'
+__version__ = '0.3'
 
 
 def main(args):
