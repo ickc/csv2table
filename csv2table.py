@@ -17,7 +17,7 @@ def main(args):
     table = terminaltables.AsciiTable(data)
     table.inner_row_border = True
     table.CHAR_H_INNER_HORIZONTAL = '='
-    sys.stdout.write(table.table)
+    args.outfile.write(table.table)
 
 parser = argparse.ArgumentParser()
 parser.set_defaults(func=main)
