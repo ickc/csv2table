@@ -9,7 +9,7 @@ import csv
 import sys
 import terminaltables
 
-version = '0.2'
+__version__ = '0.2'
 
 
 def main(args):
@@ -28,7 +28,7 @@ def main(args):
 parser = argparse.ArgumentParser()
 parser.set_defaults(func=main)
 # Args
-parser.add_argument('--version', action='version', version=version)
+parser.add_argument('--version', action='version', version=__version__)
 parser.add_argument(
     '--caption', help='The caption in the title, which will be print as pandoc styled caption.')
 parser.add_argument('--noheader', action='store_true',

@@ -18,7 +18,11 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-version = '0.1.1'
+# Import version number
+version = {}
+with open("csv2table.py") as f:
+    exec(f.read(), version)
+version = version['__version__']
 
 setup(
     name='csv2table',
