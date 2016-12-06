@@ -11,10 +11,6 @@ HTMLVersion := html5
 ## ePub
 ePubVersion := epub
 
-filter := ''
-
-CSSURL := ''
-
 # command line arguments
 pandocArgCommon := -f markdown+autolink_bare_uris-fancy_lists --toc --normalize -S -V linkcolorblue -V citecolor=blue -V urlcolor=blue -V toccolor=blue --latex-engine=$(pandocEngine) -M date="`date "+%B %e, %Y"`"
 # Workbooks
@@ -23,20 +19,20 @@ pandocArgMD := -f markdown+abbreviations+autolink_bare_uris+markdown_attribute+m
 ## TeX/PDF
 ### LaTeX workflow
 latexmkArg := -$(latexmkEngine)
-pandocArgFragment := $(pandocArgCommon) --filter=$(filter)
+pandocArgFragment := $(pandocArgCommon)
 ### pandoc workflow
 pandocArgStandalone := $(pandocArgFragment) --toc-depth=1 -s -N
 ## HTML/ePub
-pandocArgHTML := $(pandocArgFragment) -t $(HTMLVersion) --toc-depth=2 -s -N -c $(CSSURL)/css/common.css -c $(CSSURL)/fonts/fonts.css
+pandocArgHTML := $(pandocArgFragment) -t $(HTMLVersion) --toc-depth=2 -s -N -c /css/common.css -c /fonts/fonts.css
 pandocArgePub := $(pandocArgHTML) -t $(ePubVersion) --epub-chapter-level=2
 # GitHub README
 pandocArgReadmeGitHub := $(pandocArgFragment) --toc-depth=2 -s -t markdown_github --reference-location=block
 pandocArgReadmePypi := $(pandocArgFragment) -s -t rst --reference-location=block -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references
 
-test := $(wildcard tests/*.md)
-testNative := $(patsubst %.md,%.native,$(test))
+test := $(wildcard tests/*.csv)
+testMarkdown := $(patsubst %.csv,%.md,$(test))
 testPdf := $(patsubst %.md,%.pdf,$(test))
-testAll := $(testNative) $(testPdf)
+testAll := $(testMarkdown) $(testPdf)
 
 docs := $(wildcard docs/*.md)
 # docsHtml := $(patsubst %.md,%.html,$(docs))
@@ -53,20 +49,24 @@ test: pytest pep8 pylint
 
 clean:
 	rm -f .coverage $(testAll) README.html
-	rm -rf htmlcov pantable.egg-info
+	rm -rf htmlcov csv2table.egg-info
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 Clean:
 	rm -f .coverage $(testAll) $(docsAll)
-	rm -rf htmlcov pantable.egg-info
+	rm -rf htmlcov csv2table.egg-info
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 
 # Making dependancies #################################################################################################################################################################################
 
-%.native: %.md $(filter)
-	pandoc -t native -F $(filter) -o $@ $<
-%.pdf: %.md $(filter)
+
+tests/%.md: tests/%.csv
+	./csv2table.py $< > $@
+
+%.native: %.md 
+	pandoc -t native -F  -o $@ $<
+%.pdf: %.md 
 	pandoc $(pandocArgStandalone) -o $@ $<
-%.html: %.md $(filter)
+%.html: %.md 
 	pandoc $(pandocArgHTML) $< -o $@
 
 # readme
@@ -98,10 +98,10 @@ init:
 	pip install -r requirements.txt
 	pip install -r tests/requirements.txt
 
-pytest: $(testNative)
-	python3 -m pytest -vv --cov=pantable tests
+pytest: $(testMarkdown)
+	python3 -m pytest -vv tests
 pytestLite:
-	python3 -m pytest -vv --cov=pantable tests
+	python3 -m pytest -vv tests
 
 # check python styles
 pep8:
@@ -113,7 +113,7 @@ pyflakes:
 flake8:
 	flake8 .
 pylint:
-	pylint pantable/pantable.py
+	pylint csv2table.py
 
 # cleanup python
 autopep8:
