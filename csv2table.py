@@ -9,15 +9,21 @@ import csv
 import sys
 import terminaltables
 
-version = '0.1.1'
+version = '0.2'
 
 
 def main(args):
     data = list(csv.reader(args.infile))
     table = terminaltables.AsciiTable(data)
     table.inner_row_border = True
-    table.CHAR_H_INNER_HORIZONTAL = '='
-    args.outfile.write(table.table)
+    if not args.noheader:
+        table.CHAR_H_INNER_HORIZONTAL = '='
+    if not args.caption:
+        output = table.table
+    else:
+        output = ': {caption}\n\n{grid_table}'.format(
+            caption=args.caption, grid_table=table.table)
+    args.outfile.write(output)
 
 parser = argparse.ArgumentParser()
 parser.set_defaults(func=main)

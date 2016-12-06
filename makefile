@@ -30,9 +30,13 @@ pandocArgReadmeGitHub := $(pandocArgFragment) --toc-depth=2 -s -t markdown_githu
 pandocArgReadmePypi := $(pandocArgFragment) -s -t rst --reference-location=block -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references
 
 test := $(wildcard tests/*.csv)
-testMarkdown := $(patsubst %.csv,%.md,$(test))
-testPdf := $(patsubst %.csv,%.pdf,$(test))
-testAll := $(testMarkdown) $(testPdf)
+testMdStdIO := $(patsubst %.csv,%-standardIO.md,$(test))
+testMdIO := $(patsubst %.csv,%-IO.md,$(test))
+testMdCaption := $(patsubst %.csv,%-caption.md,$(test))
+testMdNoHeader := $(patsubst %.csv,%-noheader.md,$(test))
+testMd := $(testMdStdIO) $(testMdIO) $(testMdCaption) $(testMdNoHeader)
+testPdf := $(patsubst %.md,%.pdf,$(testMd))
+testAll := $(testMd) $(testPdf)
 
 docs := $(wildcard docs/*.md)
 # docsHtml := $(patsubst %.md,%.html,$(docs))
@@ -58,9 +62,15 @@ Clean:
 
 # Making dependancies #################################################################################################################################################################################
 
+%-standardIO.md: %.csv
+	< $< ./csv2table.py > $@
+%-IO.md: %.csv
+	./csv2table.py $< $@
+%-caption.md: %.csv
+	./csv2table.py --caption '*Awesome* **Markdown** Table' $< $@
+%-noheader.md: %.csv
+	./csv2table.py --noheader $< $@
 
-tests/%.md: tests/%.csv
-	./csv2table.py $< > $@
 
 %.native: %.md 
 	pandoc -t native -F  -o $@ $<
