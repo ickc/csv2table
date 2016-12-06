@@ -24,8 +24,7 @@ def main(args):
     if not args.caption:
         output = table.table
     else:
-        output = ': {caption}\n\n{grid_table}'.format(
-            caption=args.caption, grid_table=table.table)
+        output = ': ' + args.caption + '\n\n' + table.table
     args.outfile.write(output)
 
 parser = argparse.ArgumentParser()
