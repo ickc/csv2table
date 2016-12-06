@@ -1,1 +1,0 @@
-[CodeBlock ("",["table"],[]) "---\ncaption: '*Awesome* **Markdown** Table'\nalignment: RC\ntable-width: 0.7\nmarkdown: True\n---\nFirst row,defaulted to be header row,can be disabled\n1,cell can contain **markdown**,\"It can be aribrary block element:\n\n- following standard markdown syntax\n- like this\"\n2,\"Any markdown syntax, e.g.\",$$E = mc^2$$"]
