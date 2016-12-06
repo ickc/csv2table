@@ -99,7 +99,7 @@ README.html: README.rst
 # Deploy to PyPI
 ## by Travis, properly git tagged
 pypi:
-	git tag -a v$$(python setup.py --version) -m 'Deploy to PyPI' && git push origin v$$(python setup.py --version)
+	git tag -a v$$(python3 setup.py --version) -m 'Deploy to PyPI' && git push origin v$$(python3 setup.py --version)
 ## Manually
 pypiManual:
 	python setup.py register -r pypitest && python setup.py sdist upload -r pypitest && python setup.py register -r pypi && python setup.py sdist upload -r pypi
