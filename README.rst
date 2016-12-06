@@ -7,7 +7,7 @@
 ..
 
 |Build Status| |GitHub Releases| |PyPI version| |Development Status|
-|Python version| |License| |Coveralls|
+|Python version| |License|
 
 A simple cli that uses terminaltables to convert CSV into table in plain
 text. For example, the resulted table is a valid pandoc grid\_table.
@@ -25,5 +25,3 @@ element, it will be contained in the grid table output as is.
 .. |Python version| image:: https://img.shields.io/pypi/pyversions/csv2table.svg
    :target: https://pypi.python.org/pypi/csv2table/
 .. |License| image:: https://img.shields.io/pypi/l/csv2table.svg
-.. |Coveralls| image:: https://img.shields.io/coveralls/ickc/csv2table.svg
-   :target: https://coveralls.io/github/ickc/csv2table
