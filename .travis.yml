@@ -24,7 +24,7 @@ matrix:
     - python: "nightly"
     - python: "pypy3"
   fast_finish: true
-before-install:
+before_install:
   - pip install -U pip
   - pip install -r requirements.txt
   - pip install -e .[test]
