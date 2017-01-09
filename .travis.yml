@@ -24,10 +24,12 @@ matrix:
     - python: "nightly"
     - python: "pypy3"
   fast_finish: true
-install:
+before-install:
   - pip install -U pip
   - pip install -r requirements.txt
   - pip install -e .[test]
+install:
+  - python setup.py sdist bdist_wheel
 # command to run tests
 script:
   - make -j4 test
