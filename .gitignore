@@ -11,7 +11,7 @@ __pycache__/
 
 # pypi
 dist/
-pantable.egg-info/
+csv2table.egg-info/
 
 # coverage
 .coverage
