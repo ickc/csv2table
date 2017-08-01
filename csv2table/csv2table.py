@@ -28,7 +28,7 @@ def main(args):
     args.outfile.write(output)
 
 
-if __name__ == "__main__":
+def cli():
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=main)
     # Args
@@ -44,3 +44,6 @@ if __name__ == "__main__":
                         type=argparse.FileType('w'), default=sys.stdout)
     args = parser.parse_args()
     args.func(args)
+
+if __name__ == "__main__":
+    cli()

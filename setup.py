@@ -9,19 +9,19 @@ https://github.com/ickc/csv2table
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
-from codecs import open
+from io import open
 from os import path
 
-here = path.abspath(path.dirname(__file__))
-
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
 
 # Import version number
 version = {}
-with open("csv2table.py") as f:
-    exec(f.read(), version)
+with open(path.join("csv2table", "csv2table.py"), encoding='utf-8') as f:
+    for line in f:
+        if line[0:14] == '__version__ = ':
+            exec(line, version)
 version = version['__version__']
 
 setup(
@@ -122,7 +122,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'csv2table = csv2table:main'
+            'csv2table = csv2table.csv2table:cli'
         ],
     },
 )

@@ -62,13 +62,13 @@ Clean:
 # Making dependancies #################################################################################################################################################################################
 
 %-standardIO.md: %.csv
-	< $< ./csv2table.py > $@
+	< $< ./csv2table/csv2table.py > $@
 %-IO.md: %.csv
-	./csv2table.py $< $@
+	./csv2table/csv2table.py $< $@
 %-caption.md: %.csv
-	./csv2table.py --caption '*Awesome* **Markdown** Table' $< $@
+	./csv2table/csv2table.py --caption '*Awesome* **Markdown** Table' $< $@
 %-noheader.md: %.csv
-	./csv2table.py --no-header $< $@
+	./csv2table/csv2table.py --no-header $< $@
 
 
 %.native: %.md 
@@ -122,7 +122,7 @@ pyflakes:
 flake8:
 	flake8 .
 pylint:
-	pylint csv2table.py
+	pylint csv2table/csv2table.py
 
 # cleanup python
 autopep8:
