@@ -45,5 +45,6 @@ def cli():
     args = parser.parse_args()
     args.func(args)
 
+
 if __name__ == "__main__":
     cli()
