@@ -52,12 +52,10 @@ test: pytest pep8 # pylint
 
 clean:
 	rm -f .coverage $(testAll) README.html
-	rm -rf htmlcov csv2table.egg-info
+	rm -rf htmlcov csv2table.egg-info .cache
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
-Clean:
-	rm -f .coverage $(testAll) $(docsAll)
-	rm -rf htmlcov csv2table.egg-info
-	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
+Clean: clean
+	rm -f $(docsAll)
 
 # Making dependancies #################################################################################################################################################################################
 
