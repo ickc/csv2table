@@ -25,7 +25,8 @@ install:
 script:
   - make -j3 test
 after_success:
-  - [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]] && coveralls
+  - |
+    [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]] && coveralls
 deploy:
   provider: pypi
   user: ickc
