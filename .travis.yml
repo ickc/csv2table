@@ -3,26 +3,18 @@ cache:
   - pip
 # build matrix: different python and pandoc versions
 python:
-  - "2.6"
   - "2.7"
   - "3.2"
-  - "3.3"
   - "3.4"
   - "3.5"
-  - "3.5-dev" # 3.5 development branch
-  - "3.6-dev" # 3.6 development branch
-  - "nightly" # currently points to 3.7-dev
+  - "3.6"
   # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
-  - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
-  - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
-matrix:
-  allow_failures:
-    - python: "3.2"
-    - python: "3.5-dev"
-    - python: "3.6-dev"
-    - python: "nightly"
-    - python: "pypy3"
-  fast_finish: true
+  - "pypy"
+  - "pypy3.5"
+# matrix:
+#   allow_failures:
+#     - python: "nightly"
+#   fast_finish: true
 before_install:
   - pip install -U pip
   - pip install -r requirements.txt
@@ -31,9 +23,9 @@ install:
   - python setup.py sdist bdist_wheel
 # command to run tests
 script:
-  - make -j4 test
+  - make -j3 test
 after_success:
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then coveralls; else printf "skip coveralls"; fi;
+  - [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]] && coveralls
 deploy:
   provider: pypi
   user: ickc
@@ -41,4 +33,4 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    python: "3.5"
+    python: "3.6"
