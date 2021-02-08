@@ -39,9 +39,9 @@ def cli():
                         help='If not specified, treat 1st row as header row.')
     # IO
     parser.add_argument('infile', nargs='?',
-                        type=argparse.FileType('r'), default=sys.stdin)
+                        type=argparse.FileType('r', encoding='UTF-8'), default=sys.stdin)
     parser.add_argument('outfile', nargs='?',
-                        type=argparse.FileType('w'), default=sys.stdout)
+                        type=argparse.FileType('w', encoding='UTF-8'), default=sys.stdout)
     args = parser.parse_args()
     args.func(args)
 
